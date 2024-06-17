@@ -1,0 +1,40 @@
+{
+  "kind": "collectionType",
+  "collectionName": "user_apps",
+  "info": {
+    "singularName": "user-app",
+    "pluralName": "user-apps",
+    "displayName": "User App"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "phone": {
+      "type": "string",
+      "unique": true,
+      "required": true
+    },
+    "email": {
+      "type": "string",
+      "required": true
+    },
+    "isActive": {
+      "type": "boolean",
+      "default": true
+    },
+    "lastLoginAt": {
+      "type": "datetime"
+    },
+    "deletedAt": {
+      "type": "datetime"
+    },
+    "authMethods": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::auth-method.auth-method",
+      "mappedBy": "userApp"
+    }
+  }
+}

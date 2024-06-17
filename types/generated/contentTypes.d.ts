@@ -837,6 +837,49 @@ export interface ApiAssociationAssociation extends Schema.CollectionType {
   };
 }
 
+export interface ApiAuthMethodAuthMethod extends Schema.CollectionType {
+  collectionName: 'auth_methods';
+  info: {
+    singularName: 'auth-method';
+    pluralName: 'auth-methods';
+    displayName: 'Auth Method';
+    description: '';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    identifier: Attribute.String & Attribute.Required & Attribute.Unique;
+    type: Attribute.Enumeration<['Password', 'Token', 'Biometric']>;
+    strategy: Attribute.Enumeration<['Native', 'Google', 'Apple', 'Facebook']>;
+    password: Attribute.String;
+    passToken: Attribute.String;
+    idToken: Attribute.String;
+    verifyToken: Attribute.String;
+    deletedAt: Attribute.DateTime;
+    userApp: Attribute.Relation<
+      'api::auth-method.auth-method',
+      'manyToOne',
+      'api::user-app.user-app'
+    >;
+    createdAt: Attribute.DateTime;
+    updatedAt: Attribute.DateTime;
+    publishedAt: Attribute.DateTime;
+    createdBy: Attribute.Relation<
+      'api::auth-method.auth-method',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
+    updatedBy: Attribute.Relation<
+      'api::auth-method.auth-method',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
+  };
+}
+
 export interface ApiFeatureFeature extends Schema.CollectionType {
   collectionName: 'features';
   info: {
@@ -966,6 +1009,45 @@ export interface ApiSubscriptionSubscription extends Schema.CollectionType {
   };
 }
 
+export interface ApiUserAppUserApp extends Schema.CollectionType {
+  collectionName: 'user_apps';
+  info: {
+    singularName: 'user-app';
+    pluralName: 'user-apps';
+    displayName: 'User App';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    phone: Attribute.String & Attribute.Required & Attribute.Unique;
+    email: Attribute.String & Attribute.Required;
+    isActive: Attribute.Boolean & Attribute.DefaultTo<true>;
+    lastLoginAt: Attribute.DateTime;
+    deletedAt: Attribute.DateTime;
+    authMethods: Attribute.Relation<
+      'api::user-app.user-app',
+      'oneToMany',
+      'api::auth-method.auth-method'
+    >;
+    createdAt: Attribute.DateTime;
+    updatedAt: Attribute.DateTime;
+    publishedAt: Attribute.DateTime;
+    createdBy: Attribute.Relation<
+      'api::user-app.user-app',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
+    updatedBy: Attribute.Relation<
+      'api::user-app.user-app',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
+  };
+}
+
 declare module '@strapi/types' {
   export module Shared {
     export interface ContentTypes {
@@ -985,9 +1067,11 @@ declare module '@strapi/types' {
       'plugin::users-permissions.user': PluginUsersPermissionsUser;
       'plugin::i18n.locale': PluginI18NLocale;
       'api::association.association': ApiAssociationAssociation;
+      'api::auth-method.auth-method': ApiAuthMethodAuthMethod;
       'api::feature.feature': ApiFeatureFeature;
       'api::package.package': ApiPackagePackage;
       'api::subscription.subscription': ApiSubscriptionSubscription;
+      'api::user-app.user-app': ApiUserAppUserApp;
     }
   }
 }

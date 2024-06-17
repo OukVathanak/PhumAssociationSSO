@@ -1,0 +1,59 @@
+{
+  "kind": "collectionType",
+  "collectionName": "auth_methods",
+  "info": {
+    "singularName": "auth-method",
+    "pluralName": "auth-methods",
+    "displayName": "Auth Method",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "identifier": {
+      "type": "string",
+      "required": true,
+      "unique": true
+    },
+    "type": {
+      "type": "enumeration",
+      "enum": [
+        "Password",
+        "Token",
+        "Biometric"
+      ]
+    },
+    "strategy": {
+      "type": "enumeration",
+      "enum": [
+        "Native",
+        "Google",
+        "Apple",
+        "Facebook"
+      ]
+    },
+    "password": {
+      "type": "string"
+    },
+    "passToken": {
+      "type": "string"
+    },
+    "idToken": {
+      "type": "string"
+    },
+    "verifyToken": {
+      "type": "string"
+    },
+    "deletedAt": {
+      "type": "datetime"
+    },
+    "userApp": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::user-app.user-app",
+      "inversedBy": "authMethods"
+    }
+  }
+}
