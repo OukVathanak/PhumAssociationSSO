@@ -1,0 +1,37 @@
+{
+  "kind": "collectionType",
+  "collectionName": "memberships",
+  "info": {
+    "singularName": "membership",
+    "pluralName": "memberships",
+    "displayName": "Membership",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "memberID": {
+      "type": "biginteger",
+      "unique": false,
+      "required": true
+    },
+    "code": {
+      "type": "string",
+      "required": true
+    },
+    "association": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::association.association",
+      "inversedBy": "memberships"
+    },
+    "userProfile": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::user-profile.user-profile",
+      "inversedBy": "memberships"
+    }
+  }
+}

@@ -4,7 +4,8 @@
   "info": {
     "singularName": "user-app",
     "pluralName": "user-apps",
-    "displayName": "User App"
+    "displayName": "User App",
+    "description": ""
   },
   "options": {
     "draftAndPublish": true
@@ -18,7 +19,7 @@
     },
     "email": {
       "type": "string",
-      "required": true
+      "required": false
     },
     "isActive": {
       "type": "boolean",
@@ -34,6 +35,18 @@
       "type": "relation",
       "relation": "oneToMany",
       "target": "api::auth-method.auth-method",
+      "mappedBy": "userApp"
+    },
+    "userProfile": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::user-profile.user-profile",
+      "mappedBy": "userApp"
+    },
+    "sessions": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::session.session",
       "mappedBy": "userApp"
     }
   }

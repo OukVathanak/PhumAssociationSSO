@@ -1,0 +1,38 @@
+{
+  "kind": "collectionType",
+  "collectionName": "user_notifications",
+  "info": {
+    "singularName": "user-notification",
+    "pluralName": "user-notifications",
+    "displayName": "User Notification",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "status": {
+      "type": "enumeration",
+      "enum": [
+        "Read",
+        "Unread"
+      ]
+    },
+    "recievedAt": {
+      "type": "datetime"
+    },
+    "notification": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::notification.notification",
+      "inversedBy": "userNotifications"
+    },
+    "userProfile": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::user-profile.user-profile",
+      "inversedBy": "userNotifications"
+    }
+  }
+}

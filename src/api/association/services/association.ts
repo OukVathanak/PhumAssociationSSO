@@ -13,10 +13,10 @@ export default factories.createCoreService(
     return {
       async getManyAssociation(params: QueryParams): Promise<AssociationDVO[]> {
         try {
-          const associations = await strapi
-            .query("api::association.association")
-            .findMany(params);
-
+          const associations = (await strapi.entityService.findMany(
+            "api::association.association",
+            { ...params } as any
+          )) as Association[];
           if (associations.length === 0) {
             return [];
           }

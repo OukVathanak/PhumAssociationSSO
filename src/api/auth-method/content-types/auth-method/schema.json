@@ -20,8 +20,8 @@
     "type": {
       "type": "enumeration",
       "enum": [
-        "Password",
-        "Token",
+        "Native",
+        "External",
         "Biometric"
       ]
     },
@@ -38,13 +38,16 @@
       "type": "string"
     },
     "passToken": {
-      "type": "string"
+      "type": "string",
+      "unique": true
     },
-    "idToken": {
-      "type": "string"
+    "identifierToken": {
+      "type": "string",
+      "unique": true
     },
     "verifyToken": {
-      "type": "string"
+      "type": "string",
+      "unique": true
     },
     "deletedAt": {
       "type": "datetime"

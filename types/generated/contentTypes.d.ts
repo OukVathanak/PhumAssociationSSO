@@ -590,6 +590,53 @@ export interface PluginContentReleasesReleaseAction
   };
 }
 
+export interface PluginI18NLocale extends Schema.CollectionType {
+  collectionName: 'i18n_locale';
+  info: {
+    singularName: 'locale';
+    pluralName: 'locales';
+    collectionName: 'locales';
+    displayName: 'Locale';
+    description: '';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  pluginOptions: {
+    'content-manager': {
+      visible: false;
+    };
+    'content-type-builder': {
+      visible: false;
+    };
+  };
+  attributes: {
+    name: Attribute.String &
+      Attribute.SetMinMax<
+        {
+          min: 1;
+          max: 50;
+        },
+        number
+      >;
+    code: Attribute.String & Attribute.Unique;
+    createdAt: Attribute.DateTime;
+    updatedAt: Attribute.DateTime;
+    createdBy: Attribute.Relation<
+      'plugin::i18n.locale',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
+    updatedBy: Attribute.Relation<
+      'plugin::i18n.locale',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
+  };
+}
+
 export interface PluginUsersPermissionsPermission
   extends Schema.CollectionType {
   collectionName: 'up_permissions';
@@ -741,53 +788,6 @@ export interface PluginUsersPermissionsUser extends Schema.CollectionType {
   };
 }
 
-export interface PluginI18NLocale extends Schema.CollectionType {
-  collectionName: 'i18n_locale';
-  info: {
-    singularName: 'locale';
-    pluralName: 'locales';
-    collectionName: 'locales';
-    displayName: 'Locale';
-    description: '';
-  };
-  options: {
-    draftAndPublish: false;
-  };
-  pluginOptions: {
-    'content-manager': {
-      visible: false;
-    };
-    'content-type-builder': {
-      visible: false;
-    };
-  };
-  attributes: {
-    name: Attribute.String &
-      Attribute.SetMinMax<
-        {
-          min: 1;
-          max: 50;
-        },
-        number
-      >;
-    code: Attribute.String & Attribute.Unique;
-    createdAt: Attribute.DateTime;
-    updatedAt: Attribute.DateTime;
-    createdBy: Attribute.Relation<
-      'plugin::i18n.locale',
-      'oneToOne',
-      'admin::user'
-    > &
-      Attribute.Private;
-    updatedBy: Attribute.Relation<
-      'plugin::i18n.locale',
-      'oneToOne',
-      'admin::user'
-    > &
-      Attribute.Private;
-  };
-}
-
 export interface ApiAssociationAssociation extends Schema.CollectionType {
   collectionName: 'associations';
   info: {
@@ -819,6 +819,16 @@ export interface ApiAssociationAssociation extends Schema.CollectionType {
     isPrivate: Attribute.Boolean & Attribute.DefaultTo<false>;
     url: Attribute.String & Attribute.Required & Attribute.Unique;
     code: Attribute.String & Attribute.Required & Attribute.Unique;
+    notifications: Attribute.Relation<
+      'api::association.association',
+      'oneToMany',
+      'api::notification.notification'
+    >;
+    memberships: Attribute.Relation<
+      'api::association.association',
+      'oneToMany',
+      'api::membership.membership'
+    >;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     publishedAt: Attribute.DateTime;
@@ -850,12 +860,12 @@ export interface ApiAuthMethodAuthMethod extends Schema.CollectionType {
   };
   attributes: {
     identifier: Attribute.String & Attribute.Required & Attribute.Unique;
-    type: Attribute.Enumeration<['Password', 'Token', 'Biometric']>;
+    type: Attribute.Enumeration<['Native', 'External', 'Biometric']>;
     strategy: Attribute.Enumeration<['Native', 'Google', 'Apple', 'Facebook']>;
     password: Attribute.String;
-    passToken: Attribute.String;
-    idToken: Attribute.String;
-    verifyToken: Attribute.String;
+    passToken: Attribute.String & Attribute.Unique;
+    identifierToken: Attribute.String & Attribute.Unique;
+    verifyToken: Attribute.String & Attribute.Unique;
     deletedAt: Attribute.DateTime;
     userApp: Attribute.Relation<
       'api::auth-method.auth-method',
@@ -923,6 +933,91 @@ export interface ApiFeatureFeature extends Schema.CollectionType {
   };
 }
 
+export interface ApiMembershipMembership extends Schema.CollectionType {
+  collectionName: 'memberships';
+  info: {
+    singularName: 'membership';
+    pluralName: 'memberships';
+    displayName: 'Membership';
+    description: '';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    memberID: Attribute.BigInteger & Attribute.Required;
+    code: Attribute.String & Attribute.Required;
+    association: Attribute.Relation<
+      'api::membership.membership',
+      'manyToOne',
+      'api::association.association'
+    >;
+    userProfile: Attribute.Relation<
+      'api::membership.membership',
+      'manyToOne',
+      'api::user-profile.user-profile'
+    >;
+    createdAt: Attribute.DateTime;
+    updatedAt: Attribute.DateTime;
+    publishedAt: Attribute.DateTime;
+    createdBy: Attribute.Relation<
+      'api::membership.membership',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
+    updatedBy: Attribute.Relation<
+      'api::membership.membership',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
+  };
+}
+
+export interface ApiNotificationNotification extends Schema.CollectionType {
+  collectionName: 'notifications';
+  info: {
+    singularName: 'notification';
+    pluralName: 'notifications';
+    displayName: 'Notification';
+    description: '';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    title: Attribute.String & Attribute.Required;
+    desc: Attribute.Text;
+    type: Attribute.Enumeration<['General', 'Event', 'Payment']>;
+    userNotifications: Attribute.Relation<
+      'api::notification.notification',
+      'oneToMany',
+      'api::user-notification.user-notification'
+    >;
+    association: Attribute.Relation<
+      'api::notification.notification',
+      'manyToOne',
+      'api::association.association'
+    >;
+    createdAt: Attribute.DateTime;
+    updatedAt: Attribute.DateTime;
+    publishedAt: Attribute.DateTime;
+    createdBy: Attribute.Relation<
+      'api::notification.notification',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
+    updatedBy: Attribute.Relation<
+      'api::notification.notification',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
+  };
+}
+
 export interface ApiPackagePackage extends Schema.CollectionType {
   collectionName: 'packages';
   info: {
@@ -961,6 +1056,49 @@ export interface ApiPackagePackage extends Schema.CollectionType {
       Attribute.Private;
     updatedBy: Attribute.Relation<
       'api::package.package',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
+  };
+}
+
+export interface ApiSessionSession extends Schema.CollectionType {
+  collectionName: 'sessions';
+  info: {
+    singularName: 'session';
+    pluralName: 'sessions';
+    displayName: 'Session';
+    description: '';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    strategy: Attribute.Enumeration<['Native', 'Google', 'Apple', 'Facebook']>;
+    type: Attribute.Enumeration<['User Session', 'Anonymous']>;
+    isActive: Attribute.Boolean & Attribute.DefaultTo<true>;
+    expiredAt: Attribute.DateTime;
+    token: Attribute.String & Attribute.Required;
+    deviceName: Attribute.String;
+    deviceID: Attribute.String;
+    fcm: Attribute.String;
+    userApp: Attribute.Relation<
+      'api::session.session',
+      'manyToOne',
+      'api::user-app.user-app'
+    >;
+    createdAt: Attribute.DateTime;
+    updatedAt: Attribute.DateTime;
+    publishedAt: Attribute.DateTime;
+    createdBy: Attribute.Relation<
+      'api::session.session',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
+    updatedBy: Attribute.Relation<
+      'api::session.session',
       'oneToOne',
       'admin::user'
     > &
@@ -1015,13 +1153,14 @@ export interface ApiUserAppUserApp extends Schema.CollectionType {
     singularName: 'user-app';
     pluralName: 'user-apps';
     displayName: 'User App';
+    description: '';
   };
   options: {
     draftAndPublish: true;
   };
   attributes: {
     phone: Attribute.String & Attribute.Required & Attribute.Unique;
-    email: Attribute.String & Attribute.Required;
+    email: Attribute.String;
     isActive: Attribute.Boolean & Attribute.DefaultTo<true>;
     lastLoginAt: Attribute.DateTime;
     deletedAt: Attribute.DateTime;
@@ -1029,6 +1168,16 @@ export interface ApiUserAppUserApp extends Schema.CollectionType {
       'api::user-app.user-app',
       'oneToMany',
       'api::auth-method.auth-method'
+    >;
+    userProfile: Attribute.Relation<
+      'api::user-app.user-app',
+      'oneToOne',
+      'api::user-profile.user-profile'
+    >;
+    sessions: Attribute.Relation<
+      'api::user-app.user-app',
+      'oneToMany',
+      'api::session.session'
     >;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
@@ -1041,6 +1190,99 @@ export interface ApiUserAppUserApp extends Schema.CollectionType {
       Attribute.Private;
     updatedBy: Attribute.Relation<
       'api::user-app.user-app',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
+  };
+}
+
+export interface ApiUserNotificationUserNotification
+  extends Schema.CollectionType {
+  collectionName: 'user_notifications';
+  info: {
+    singularName: 'user-notification';
+    pluralName: 'user-notifications';
+    displayName: 'User Notification';
+    description: '';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    status: Attribute.Enumeration<['Read', 'Unread']>;
+    recievedAt: Attribute.DateTime;
+    notification: Attribute.Relation<
+      'api::user-notification.user-notification',
+      'manyToOne',
+      'api::notification.notification'
+    >;
+    userProfile: Attribute.Relation<
+      'api::user-notification.user-notification',
+      'manyToOne',
+      'api::user-profile.user-profile'
+    >;
+    createdAt: Attribute.DateTime;
+    updatedAt: Attribute.DateTime;
+    publishedAt: Attribute.DateTime;
+    createdBy: Attribute.Relation<
+      'api::user-notification.user-notification',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
+    updatedBy: Attribute.Relation<
+      'api::user-notification.user-notification',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
+  };
+}
+
+export interface ApiUserProfileUserProfile extends Schema.CollectionType {
+  collectionName: 'user_profiles';
+  info: {
+    singularName: 'user-profile';
+    pluralName: 'user-profiles';
+    displayName: 'User Profile';
+    description: '';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    firstName: Attribute.String;
+    lastName: Attribute.String;
+    phone: Attribute.String;
+    email: Attribute.String;
+    deletedAt: Attribute.DateTime;
+    userApp: Attribute.Relation<
+      'api::user-profile.user-profile',
+      'oneToOne',
+      'api::user-app.user-app'
+    >;
+    userNotifications: Attribute.Relation<
+      'api::user-profile.user-profile',
+      'oneToMany',
+      'api::user-notification.user-notification'
+    >;
+    memberships: Attribute.Relation<
+      'api::user-profile.user-profile',
+      'oneToMany',
+      'api::membership.membership'
+    >;
+    createdAt: Attribute.DateTime;
+    updatedAt: Attribute.DateTime;
+    publishedAt: Attribute.DateTime;
+    createdBy: Attribute.Relation<
+      'api::user-profile.user-profile',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
+    updatedBy: Attribute.Relation<
+      'api::user-profile.user-profile',
       'oneToOne',
       'admin::user'
     > &
@@ -1062,16 +1304,21 @@ declare module '@strapi/types' {
       'plugin::upload.folder': PluginUploadFolder;
       'plugin::content-releases.release': PluginContentReleasesRelease;
       'plugin::content-releases.release-action': PluginContentReleasesReleaseAction;
+      'plugin::i18n.locale': PluginI18NLocale;
       'plugin::users-permissions.permission': PluginUsersPermissionsPermission;
       'plugin::users-permissions.role': PluginUsersPermissionsRole;
       'plugin::users-permissions.user': PluginUsersPermissionsUser;
-      'plugin::i18n.locale': PluginI18NLocale;
       'api::association.association': ApiAssociationAssociation;
       'api::auth-method.auth-method': ApiAuthMethodAuthMethod;
       'api::feature.feature': ApiFeatureFeature;
+      'api::membership.membership': ApiMembershipMembership;
+      'api::notification.notification': ApiNotificationNotification;
       'api::package.package': ApiPackagePackage;
+      'api::session.session': ApiSessionSession;
       'api::subscription.subscription': ApiSubscriptionSubscription;
       'api::user-app.user-app': ApiUserAppUserApp;
+      'api::user-notification.user-notification': ApiUserNotificationUserNotification;
+      'api::user-profile.user-profile': ApiUserProfileUserProfile;
     }
   }
 }

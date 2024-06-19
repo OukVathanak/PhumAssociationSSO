@@ -1,0 +1,58 @@
+{
+  "kind": "collectionType",
+  "collectionName": "sessions",
+  "info": {
+    "singularName": "session",
+    "pluralName": "sessions",
+    "displayName": "Session",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "strategy": {
+      "type": "enumeration",
+      "enum": [
+        "Native",
+        "Google",
+        "Apple",
+        "Facebook"
+      ]
+    },
+    "type": {
+      "type": "enumeration",
+      "enum": [
+        "User Session",
+        "Anonymous"
+      ]
+    },
+    "isActive": {
+      "type": "boolean",
+      "default": true
+    },
+    "expiredAt": {
+      "type": "datetime"
+    },
+    "token": {
+      "type": "string",
+      "required": true
+    },
+    "deviceName": {
+      "type": "string"
+    },
+    "deviceID": {
+      "type": "string"
+    },
+    "fcm": {
+      "type": "string"
+    },
+    "userApp": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::user-app.user-app",
+      "inversedBy": "sessions"
+    }
+  }
+}

@@ -3,9 +3,78 @@
  */
 
 import { factories } from "@strapi/strapi";
-import { AuthMethod } from "../../../../types/authMethod";
+import { AuthMethod, AuthMethodDTO } from "../../../../types/authMethod";
+import { QueryParams } from "../../../utils/interface";
 
-export default factories.createCoreService("api::auth-method.auth-method");
+export default factories.createCoreService(
+  "api::auth-method.auth-method",
+  ({ strapi }) => {
+    return {
+      async getManyAuthMethod(params: QueryParams): Promise<AuthMethodDVO[]> {
+        try {
+          const authMethods = (await strapi.entityService.findMany(
+            "api::auth-method.auth-method",
+            { ...params } as any
+          )) as AuthMethod[];
+
+          if (authMethods.length === 0) {
+            return [];
+          }
+
+          return authMethods.map(
+            (authMethod) => new AuthMethodDVO(authMethod as AuthMethod)
+          );
+        } catch (error) {
+          throw new Error(error);
+        }
+      },
+
+      async getOneAuthMethod(params: QueryParams): Promise<AuthMethodDVO> {
+        try {
+          const authMethod = (await strapi.entityService.findOne(
+            "api::auth-method.auth-method",
+            { ...params } as any
+          )) as AuthMethod;
+
+          if (!authMethod) {
+            return null;
+          }
+
+          return new AuthMethodDVO(authMethod);
+        } catch (error) {
+          throw new Error(error);
+        }
+      },
+
+      async postAuthMethod(payload: AuthMethodDTO): Promise<AuthMethodDVO> {
+        try {
+          const authMethod = (await strapi.entityService.create(
+            "api::auth-method.auth-method",
+            { data: payload }
+          )) as AuthMethod;
+
+          return new AuthMethodDVO(authMethod);
+        } catch (error) {
+          throw new Error(error);
+        }
+      },
+
+      async putAuthMethod(payload: AuthMethodDTO): Promise<AuthMethodDVO> {
+        try {
+          const authMethod = (await strapi.entityService.update(
+            "api::auth-method.auth-method",
+            payload.id,
+            { data: payload }
+          )) as AuthMethod;
+
+          return new AuthMethodDVO(authMethod);
+        } catch (error) {
+          throw new Error(error);
+        }
+      },
+    };
+  }
+);
 
 export class AuthMethodDVO {
   id: number;
