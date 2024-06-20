@@ -5,6 +5,9 @@
 import { factories } from "@strapi/strapi";
 import { UserProfile, UserProfileDTO } from "../../../../types/userProfile";
 import { QueryParams } from "../../../utils/interface";
+import { UserApp } from "../../../../types/userApp";
+import { UserNotification } from "../../../../types/userNotification";
+import { Membership } from "../../../../types/membership";
 
 export default factories.createCoreService(
   "api::user-profile.user-profile",
@@ -82,6 +85,9 @@ export class UserProfileDVO {
   lastName: string;
   phone: string;
   email?: string;
+  userApp?: UserApp;
+  userNotifications?: UserNotification[];
+  memberships?: Membership[];
 
   constructor(data: UserProfile) {
     this.id = data.id;
@@ -89,5 +95,8 @@ export class UserProfileDVO {
     this.lastName = data.lastName;
     this.phone = data.phone;
     this.email = data.email;
+    this.userApp = data.userApp;
+    this.userNotifications = data.userNotifications;
+    this.memberships = data.memberships;
   }
 }

@@ -1,0 +1,39 @@
+{
+  "kind": "collectionType",
+  "collectionName": "otps",
+  "info": {
+    "singularName": "otp",
+    "pluralName": "otps",
+    "displayName": "OTP",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "code": {
+      "type": "string",
+      "required": true
+    },
+    "isUsed": {
+      "type": "boolean",
+      "default": false
+    },
+    "token": {
+      "type": "string",
+      "required": true,
+      "unique": true
+    },
+    "expiredAt": {
+      "type": "datetime",
+      "required": true
+    },
+    "userApp": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::user-app.user-app",
+      "inversedBy": "otps"
+    }
+  }
+}

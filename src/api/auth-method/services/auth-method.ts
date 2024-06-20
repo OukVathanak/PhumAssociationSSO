@@ -5,6 +5,7 @@
 import { factories } from "@strapi/strapi";
 import { AuthMethod, AuthMethodDTO } from "../../../../types/authMethod";
 import { QueryParams } from "../../../utils/interface";
+import { UserApp } from "../../../../types/userApp";
 
 export default factories.createCoreService(
   "api::auth-method.auth-method",
@@ -83,8 +84,9 @@ export class AuthMethodDVO {
   strategy: string;
   password?: string;
   passToken?: string;
-  idToken?: string;
+  identifierToken?: string;
   verifyToken?: string;
+  userApp?: UserApp;
 
   constructor(data: AuthMethod) {
     this.id = data.id;
@@ -93,7 +95,8 @@ export class AuthMethodDVO {
     this.strategy = data.strategy;
     this.passToken = data.password;
     this.passToken = data.passToken;
-    this.idToken = data.idToken;
+    this.identifierToken = data.identifierToken;
     this.verifyToken = data.verifyToken;
+    this.userApp = data.userApp;
   }
 }

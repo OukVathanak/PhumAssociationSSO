@@ -859,7 +859,7 @@ export interface ApiAuthMethodAuthMethod extends Schema.CollectionType {
     draftAndPublish: true;
   };
   attributes: {
-    identifier: Attribute.String & Attribute.Required & Attribute.Unique;
+    identifier: Attribute.String & Attribute.Required;
     type: Attribute.Enumeration<['Native', 'External', 'Biometric']>;
     strategy: Attribute.Enumeration<['Native', 'Google', 'Apple', 'Facebook']>;
     password: Attribute.String;
@@ -946,7 +946,7 @@ export interface ApiMembershipMembership extends Schema.CollectionType {
   };
   attributes: {
     memberID: Attribute.BigInteger & Attribute.Required;
-    code: Attribute.String & Attribute.Required;
+    memberCode: Attribute.String & Attribute.Required;
     association: Attribute.Relation<
       'api::membership.membership',
       'manyToOne',
@@ -1014,6 +1014,37 @@ export interface ApiNotificationNotification extends Schema.CollectionType {
       'oneToOne',
       'admin::user'
     > &
+      Attribute.Private;
+  };
+}
+
+export interface ApiOtpOtp extends Schema.CollectionType {
+  collectionName: 'otps';
+  info: {
+    singularName: 'otp';
+    pluralName: 'otps';
+    displayName: 'OTP';
+    description: '';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    code: Attribute.String & Attribute.Required;
+    isUsed: Attribute.Boolean & Attribute.DefaultTo<false>;
+    token: Attribute.String & Attribute.Required & Attribute.Unique;
+    expiredAt: Attribute.DateTime & Attribute.Required;
+    userApp: Attribute.Relation<
+      'api::otp.otp',
+      'manyToOne',
+      'api::user-app.user-app'
+    >;
+    createdAt: Attribute.DateTime;
+    updatedAt: Attribute.DateTime;
+    publishedAt: Attribute.DateTime;
+    createdBy: Attribute.Relation<'api::otp.otp', 'oneToOne', 'admin::user'> &
+      Attribute.Private;
+    updatedBy: Attribute.Relation<'api::otp.otp', 'oneToOne', 'admin::user'> &
       Attribute.Private;
   };
 }
@@ -1159,9 +1190,9 @@ export interface ApiUserAppUserApp extends Schema.CollectionType {
     draftAndPublish: true;
   };
   attributes: {
-    phone: Attribute.String & Attribute.Required & Attribute.Unique;
+    phone: Attribute.String & Attribute.Required;
     email: Attribute.String;
-    isActive: Attribute.Boolean & Attribute.DefaultTo<true>;
+    isActive: Attribute.Boolean & Attribute.DefaultTo<false>;
     lastLoginAt: Attribute.DateTime;
     deletedAt: Attribute.DateTime;
     authMethods: Attribute.Relation<
@@ -1178,6 +1209,11 @@ export interface ApiUserAppUserApp extends Schema.CollectionType {
       'api::user-app.user-app',
       'oneToMany',
       'api::session.session'
+    >;
+    otps: Attribute.Relation<
+      'api::user-app.user-app',
+      'oneToMany',
+      'api::otp.otp'
     >;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
@@ -1313,6 +1349,7 @@ declare module '@strapi/types' {
       'api::feature.feature': ApiFeatureFeature;
       'api::membership.membership': ApiMembershipMembership;
       'api::notification.notification': ApiNotificationNotification;
+      'api::otp.otp': ApiOtpOtp;
       'api::package.package': ApiPackagePackage;
       'api::session.session': ApiSessionSession;
       'api::subscription.subscription': ApiSubscriptionSubscription;

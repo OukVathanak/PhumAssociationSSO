@@ -14,7 +14,7 @@
   "attributes": {
     "phone": {
       "type": "string",
-      "unique": true,
+      "unique": false,
       "required": true
     },
     "email": {
@@ -23,7 +23,7 @@
     },
     "isActive": {
       "type": "boolean",
-      "default": true
+      "default": false
     },
     "lastLoginAt": {
       "type": "datetime"
@@ -47,6 +47,12 @@
       "type": "relation",
       "relation": "oneToMany",
       "target": "api::session.session",
+      "mappedBy": "userApp"
+    },
+    "otps": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::otp.otp",
       "mappedBy": "userApp"
     }
   }
